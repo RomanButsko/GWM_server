@@ -11,4 +11,6 @@ export class CreatePostDto {
   location: string;
   @IsNumber()
   userId: number;
+  @IsString()
+  picture: string;
 }

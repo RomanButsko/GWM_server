@@ -1,16 +1,17 @@
-import { User } from './../../user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { ExtractJwt } from 'passport-jwt';
-import { Strategy } from 'passport';
+import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
+import { Repository } from 'sequelize-typescript';
 
 @Injectable()
-export class ATJwtStrategy extends PassportStrategy(Strategy, 'access-jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    @InjectModel(User) private userRepository: typeof User,
+    @InjectModel(User) private userRepository: Repository<User>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

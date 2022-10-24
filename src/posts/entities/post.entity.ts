@@ -15,6 +15,7 @@ interface IPost {
   data: Date;
   location: string;
   userId: number;
+  picture: string;
 }
 
 @Table
@@ -57,6 +58,24 @@ export class Post extends Model<Post, IPost> {
   date: Date;
 
   @ApiProperty({
+    example: 'Путь к картинке',
+    description: 'Фото планируемого мероприятия',
+  })
+  @Column({
+    type: DataType.STRING,
+  })
+  picture: string;
+
+  @ApiProperty({
+    example: '304views',
+    description: 'Количество просмотров',
+  })
+  @Column({
+    type: DataType.NUMBER,
+  })
+  views: number;
+
+  @ApiProperty({
     example: 'ул.Московская,д.13',
     description: 'Место встречи',
   })
@@ -64,6 +83,20 @@ export class Post extends Model<Post, IPost> {
     type: DataType.STRING,
   })
   location: string;
+
+  @ApiProperty({ example: '04.05.2020', description: 'Дата создания' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  createdAt: Date;
+
+  @ApiProperty({ example: '04.05.2020', description: 'Дата обновления' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  updatedAt: Date;
 
   @ForeignKey(() => User)
   userId: number;

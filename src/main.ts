@@ -14,6 +14,16 @@ async function start() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  app.enableCors({
+    origin: [/^(.*)/],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+    credentials: true,
+    allowedHeaders:
+      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for',
+  });
+
   await app.listen(PORT);
   console.log('сервер запущен на порту' + PORT);
 }

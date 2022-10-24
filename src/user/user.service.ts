@@ -4,6 +4,10 @@ import { InjectModel } from '@nestjs/sequelize';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Post } from 'src/posts/entities/post.entity';
 
+const notSeachUser = (user: User) => {
+  if (!user) throw new ForbiddenException('Пользователь не найден');
+};
+
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User) private userRepository: typeof User) {}
@@ -12,13 +16,21 @@ export class UserService {
       where: { id },
       include: [{ model: Post }],
     });
-    if (!user) throw new ForbiddenException('Пользователь не найден');
+    notSeachUser(user);
+    return user;
+  }
+
+  async findOneWithoutPosts(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    notSeachUser(user);
     return user;
   }
 
   async findOneByEmail(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) throw new ForbiddenException('Пользователь не найден');
+    notSeachUser(user);
     return user;
   }
 

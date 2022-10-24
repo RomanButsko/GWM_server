@@ -1,5 +1,4 @@
 import { CurrentUser } from './user.decorator';
-import { AuthDecorator } from './../auth/decorators/auth.decorator';
 import { User } from './entities/user.entity';
 import {
   Controller,
@@ -13,6 +12,7 @@ import {
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators';
 
 @Controller('user')
 export class UserController {
@@ -25,9 +25,18 @@ export class UserController {
   }
   @ApiOperation({ summary: 'Получение пользователя' })
   @ApiResponse({ status: 200, type: User })
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
+  }
+
+  @ApiOperation({ summary: 'Получение пользователя без его публикаций' })
+  @ApiResponse({ status: 200, type: User })
+  @Public()
+  @Get('pureUser/:id')
+  findOneWithoutPosts(@Param('id') id: string) {
+    return this.userService.findOneWithoutPosts(+id);
   }
 
   @ApiOperation({ summary: 'Получение пользователя по email' })
@@ -39,7 +48,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Получение пользователей' })
   @ApiResponse({ status: 200, type: [User] })
-  @AuthDecorator()
+  @Public()
   @Get()
   findALL() {
     return this.userService.findALL();

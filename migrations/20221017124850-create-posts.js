@@ -6,17 +6,9 @@ module.exports = {
     try {
       await queryInterface.addColumn(
         'Users',
-        'avatarPath',
+        'role',
         {
-          type: Sequelize.STRING,
-        },
-        { transaction },
-      );
-      await queryInterface.addColumn(
-        'Users',
-        'aboutMe',
-        {
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
         },
         { transaction },
       );

@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, DataType, Table, Model, HasMany } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  Table,
+  Model,
+  HasMany,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { Post } from 'src/posts/entities/post.entity';
+import { Role } from 'src/roles/entities/role.entity';
+import { UserRole } from 'src/roles/entities/user-role.entity';
 
 @Table
 export class User extends Model {
@@ -124,6 +133,20 @@ export class User extends Model {
   })
   dislike: number;
 
+  @ApiProperty({ example: '04.05.2020', description: 'Дата создания' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  createdAt: Date;
+
+  @ApiProperty({ example: '04.05.2020', description: 'Дата обновления' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  updatedAt: Date;
+
   @Column({
     type: DataType.STRING,
     allowNull: true,
@@ -132,4 +155,7 @@ export class User extends Model {
 
   @HasMany(() => Post)
   posts?: Post[];
+
+  @BelongsToMany(() => Role, () => UserRole)
+  role: Role[];
 }

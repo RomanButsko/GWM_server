@@ -1,3 +1,4 @@
+import { RolesService } from './../roles/roles.service';
 import { CreateUserDto } from './../user/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { User } from './../user/entities/user.entity';
@@ -18,6 +19,7 @@ export class AuthService {
     @InjectModel(User) private userRepository: typeof User,
     private jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly roleService: RolesService,
   ) {}
 
   async createTokens(email: string, userId: number): Promise<string> {
@@ -27,9 +29,8 @@ export class AuthService {
         id: userId,
       },
       {
-        secret:
-          this.configService.get<string>('ATJWT_SECRET') || 'ATJWT_SECRET',
-        expiresIn: '60s',
+        secret: this.configService.get<string>('ATJWT_SECRET'),
+        expiresIn: '60d',
       },
     );
   }
@@ -51,6 +52,7 @@ export class AuthService {
 
     const hashPassword = await this.hashData(dto.password);
     const token = await this.createTokens(dto.email, dto.id);
+    const { id } = await this.roleService.getRoleByValue('USER');
     const createUser = await this.userRepository.create({
       email: dto.email,
       name: dto.name,
@@ -60,22 +62,24 @@ export class AuthService {
       gender: dto.gender,
       accessT: token,
       password: hashPassword,
+      role: id,
     });
-    return { ...createUser, token };
+    await createUser.$set('role', [id]);
+    return createUser;
   }
 
-  async signIn(dto: AuthDto) {
-    const user = await this.userRepository.findOne({
-      where: { email: dto.email },
-    });
+  async signIn({ email, password }: AuthDto) {
+    const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new ForbiddenException('Пользователь не зарегестрирован');
 
-    const checkUser = await bcrypt.compare(dto.password, user.password);
+    const checkUser = await bcrypt.compare(password, user.password);
     if (!checkUser) {
       throw new ForbiddenException('Введен неверный логин или пароль');
     }
     const tokens = await this.createTokens(user.email, Number(user.id));
-    return tokens;
+    user.accessT = tokens;
+    console.log(tokens);
+    return user;
   }
 
   //неккоректно - нужно поработать с блэк листом

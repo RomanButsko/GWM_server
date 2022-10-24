@@ -4,6 +4,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
+import sequelize from 'sequelize';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class PostsService {
@@ -11,7 +13,8 @@ export class PostsService {
     @InjectModel(Post) private readonly postRepository: typeof Post,
     private userService: UserService,
   ) {}
-  async create(dto: CreatePostDto) {
+  async create(dto: CreatePostDto, id: number) {
+    dto.userId = id;
     return await this.postRepository.create(dto);
   }
 
@@ -19,9 +22,45 @@ export class PostsService {
     return this.postRepository.findAll();
   }
 
+  findMostPopular() {
+    return this.postRepository.findAll({
+      order: [[sequelize.literal('views'), 'ASC']],
+    });
+  }
+
+  async findMyPostBySearch(searchTerm?: string) {
+    let options = {};
+
+    if (searchTerm) {
+      options = {
+        title: { [Op.iLike]: `%${searchTerm}%` },
+      };
+    }
+    const posts = await this.postRepository.findAll({
+      where: {
+        ...options,
+      },
+    });
+    return posts;
+  }
+
+  findNewPost() {
+    return this.postRepository.findAll({
+      order: [['createdAt', 'DESC']],
+    });
+  }
+
   async findMyPost(id: number) {
     const posts = await this.postRepository.findAll({ where: { userId: id } });
     return posts;
+  }
+
+  async findPost(id: number) {
+    const post = await this.postRepository.findOne({ where: { id } });
+    post.views++;
+    await post.save();
+
+    return post;
   }
 
   async update(postId: number, updatePostDto: UpdatePostDto) {

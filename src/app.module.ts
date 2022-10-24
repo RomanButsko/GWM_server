@@ -7,6 +7,10 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './auth/decorators';
+import { RolesModule } from './roles/roles.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -22,8 +26,16 @@ import { PostsModule } from './posts/posts.module';
     UserModule,
     AuthModule,
     PostsModule,
+    RolesModule,
+    MediaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
 })
 export class AppModule {}

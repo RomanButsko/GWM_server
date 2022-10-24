@@ -12,6 +12,7 @@ export class UpdateUserDto {
   @IsString()
   readonly city: string;
   @IsEmail()
-  readonly email?: string;
+  readonly email: string;
+  @IsString()
   readonly password: string;
 }
