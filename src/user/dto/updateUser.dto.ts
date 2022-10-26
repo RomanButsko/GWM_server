@@ -15,4 +15,6 @@ export class UpdateUserDto {
   readonly email: string;
   @IsString()
   readonly password: string;
+  @IsString()
+  readonly avatarPath: string;
 }

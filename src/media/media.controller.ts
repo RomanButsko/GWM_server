@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Public } from 'src/auth/decorators';
 
 @Controller('media')
 export class MediaController {
@@ -15,11 +16,13 @@ export class MediaController {
 
   @HttpCode(200)
   @Post()
+  @Public()
   @UseInterceptors(FileInterceptor('media'))
-  uploadFile(
+  async uploadFile(
     @UploadedFile() mediaFile: Express.Multer.File,
     @Query('folder') folder?: string,
+    @Query('id') id?: number,
   ) {
-    return this.mediaService.saveMedia(mediaFile, folder);
+    return this.mediaService.saveMedia(mediaFile, folder, id);
   }
 }

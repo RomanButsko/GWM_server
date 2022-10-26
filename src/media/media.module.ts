@@ -1,3 +1,6 @@
+import { UserModule } from './../user/user.module';
+import { User } from './../user/entities/user.entity';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { Module } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { MediaController } from './media.controller';
@@ -11,6 +14,8 @@ import { path } from 'app-root-path';
       rootPath: `${path}/uploads`,
       serveRoot: '/uploads',
     }),
+    SequelizeModule.forFeature([User]),
+    UserModule,
   ],
   providers: [MediaService],
 })

@@ -8,8 +8,9 @@ export class MediaService {
   async saveMedia(
     mediaFile: Express.Multer.File,
     folder = 'default',
+    id: number,
   ): Promise<IMediaResponse> {
-    const uploadFolder = `${path}/uploads/${folder}`;
+    const uploadFolder = `${path}/uploads/${folder}/userId/${id}`;
     await ensureDir(uploadFolder);
 
     await writeFile(
@@ -18,7 +19,7 @@ export class MediaService {
     );
 
     return {
-      url: `/uploads/${folder}/${mediaFile.originalname}`,
+      url: `/uploads/${folder}/userId/${id}/${mediaFile.originalname}`,
       name: mediaFile.originalname,
     };
   }

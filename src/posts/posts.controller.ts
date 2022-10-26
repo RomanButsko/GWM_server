@@ -9,13 +9,10 @@ import {
   Param,
   Delete,
   Query,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('posts')
 export class PostsController {
@@ -27,16 +24,6 @@ export class PostsController {
     @Body() createPostDto: CreatePostDto,
   ) {
     return await this.postsService.create(createPostDto, id);
-  }
-
-  @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('photos', {
-      dest: './uploads',
-    }),
-  )
-  async uploadPicture(@UploadedFile() file) {
-    console.log('picture');
   }
 
   @Public()
@@ -82,6 +69,7 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @Public()
   remove(@Param('id') id: string) {
     return this.postsService.remove(+id);
   }
