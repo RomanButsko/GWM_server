@@ -49,6 +49,7 @@ export class AuthService {
         HttpStatus.FORBIDDEN,
       );
     }
+    const pathUserDefaultAvatar = '/uploads/user-avatar/user-svg.svg';
 
     const hashPassword = await this.hashData(dto.password);
     const token = await this.createTokens(dto.email, dto.id);
@@ -63,6 +64,7 @@ export class AuthService {
       accessT: token,
       password: hashPassword,
       role: id,
+      avatarPath: pathUserDefaultAvatar,
     });
     await createUser.$set('role', [id]);
     return createUser;

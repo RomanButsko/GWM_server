@@ -41,6 +41,8 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    console.log('id', id);
+    console.log('update', updateUserDto);
     return await this.findOne(id).then((user) => user.update(updateUserDto));
   }
 
