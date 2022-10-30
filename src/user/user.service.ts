@@ -28,6 +28,14 @@ export class UserService {
     return user;
   }
 
+  async findBaseDataUsers(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      attributes: ['id', 'name', 'surname', 'date', 'city', 'avatarPath'],
+    });
+    return user;
+  }
+
   async findOneByEmail(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     notSeachUser(user);
@@ -41,8 +49,6 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    console.log('id', id);
-    console.log('update', updateUserDto);
     return await this.findOne(id).then((user) => user.update(updateUserDto));
   }
 

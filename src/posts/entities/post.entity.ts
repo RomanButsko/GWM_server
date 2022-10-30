@@ -2,12 +2,15 @@ import { User } from './../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
+import { INTEGER } from 'sequelize';
 
 interface IPost {
   title: string;
@@ -103,4 +106,14 @@ export class Post extends Model<Post, IPost> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @ApiProperty({
+    example: 'id - пользователя',
+    description: 'id присоединенных пользователей',
+  })
+  @Column({
+    type: DataType.ARRAY(INTEGER),
+    allowNull: true,
+  })
+  joinUser: number[];
 }

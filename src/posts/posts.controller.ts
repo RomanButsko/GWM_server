@@ -60,7 +60,18 @@ export class PostsController {
     return this.postsService.findPost(+id);
   }
 
+  @Post('join/:postId')
+  joinToEvent(@CurrentUser('id') id: number, @Param('postId') postId: string) {
+    return this.postsService.joinEvent(id, +postId);
+  }
+
+  @Post('leaveEvent/:postId')
+  leaveEvent(@CurrentUser('id') id: number, @Param('postId') postId: string) {
+    return this.postsService.leaveEvent(id, +postId);
+  }
+
   @Patch(':postId')
+  @Public()
   update(
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,

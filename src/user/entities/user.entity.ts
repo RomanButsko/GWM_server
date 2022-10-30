@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { INTEGER } from 'sequelize';
 import {
   Column,
   DataType,
@@ -158,4 +159,14 @@ export class User extends Model {
 
   @BelongsToMany(() => Role, () => UserRole)
   role: Role[];
+
+  @ApiProperty({
+    example: 'id - постов',
+    description: 'id постов, планируемых к посещению',
+  })
+  @Column({
+    type: DataType.ARRAY(INTEGER),
+    allowNull: true,
+  })
+  joinPost: number[];
 }

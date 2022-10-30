@@ -46,6 +46,16 @@ export class UserController {
     return this.userService.findOneByEmail(email);
   }
 
+  @ApiOperation({
+    summary: 'Получение основных данных пользователя(id, name, surname photo)',
+  })
+  @ApiResponse({ status: 200, type: User })
+  @Public()
+  @Get('baseDataUser/:id')
+  findBaseDataUsers(@Param('id') id: string) {
+    return this.userService.findBaseDataUsers(+id);
+  }
+
   @ApiOperation({ summary: 'Получение пользователей' })
   @ApiResponse({ status: 200, type: [User] })
   @Public()
@@ -56,6 +66,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Обновление данных пользователя(email, password)' })
   @ApiResponse({ status: 200, type: User })
+  @Public()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);

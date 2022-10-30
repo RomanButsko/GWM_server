@@ -63,6 +63,35 @@ export class PostsService {
     return post;
   }
 
+  async joinEvent(id: number, postId: number) {
+    const user = await this.userService.findOne(id);
+    const post = await this.findPost(postId);
+    let newUser = Object.assign([], post.toJSON().joinUser);
+    newUser.push(user.toJSON().id);
+
+    let newPost = Object.assign([], user.toJSON().joinPost);
+    newPost.push(postId);
+
+    await this.update(postId, { joinUser: newUser });
+    await this.userService.update(user.toJSON().id, { joinPost: newPost });
+  }
+
+  async leaveEvent(id: number, postId: number) {
+    const user = await this.userService.findOne(id);
+    const post = await this.findPost(postId);
+
+    const newUser = user
+      .toJSON()
+      .joinPost.filter((userActivePost: number) => userActivePost !== postId);
+
+    const newPost = post
+      .toJSON()
+      .joinUser.filter((joinedUser) => joinedUser !== id);
+
+    await this.update(postId, { joinUser: newPost });
+    await this.userService.update(user.toJSON().id, { joinPost: newUser });
+  }
+
   async update(postId: number, updatePostDto: UpdatePostDto) {
     const post = await this.postRepository.findOne({ where: { id: postId } });
     if (!post) {

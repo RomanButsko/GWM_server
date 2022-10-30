@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsNumber } from 'class-validator';
+import { IsString, IsDate, IsNumber, IsArray } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -13,4 +13,6 @@ export class CreatePostDto {
   userId: number;
   @IsString()
   picture: string;
+  @IsArray()
+  joinUser: number[];
 }
