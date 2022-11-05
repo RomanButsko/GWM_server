@@ -1,3 +1,4 @@
+import { ChatService } from './chat/chat.service';
 import { sequalizeConfig } from './configs/sequelize.config';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,6 +12,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './auth/decorators';
 import { RolesModule } from './roles/roles.module';
 import { MediaModule } from './media/media.module';
+import { ChatModule } from './chat/chat.module';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -28,6 +31,7 @@ import { MediaModule } from './media/media.module';
     PostsModule,
     RolesModule,
     MediaModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [
@@ -36,6 +40,7 @@ import { MediaModule } from './media/media.module';
       provide: APP_GUARD,
       useClass: AtGuard,
     },
+    AppGateway,
   ],
 })
 export class AppModule {}

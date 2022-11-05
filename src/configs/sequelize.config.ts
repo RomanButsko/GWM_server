@@ -1,3 +1,4 @@
+import { Chat } from './../chat/entities/chat.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { User } from './../user/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +15,7 @@ export const sequalizeConfig = async (
   username: configService.get<string>('POSTGRES_USERNAME'),
   password: configService.get<string>('POSTGRES_PASSWORD'),
   database: configService.get<string>('POSTGRES_DATABASE'),
-  models: [User, Post, Role, UserRole],
+  models: [User, Post, Role, UserRole, Chat],
   autoLoadModels: true,
   synchronize: true,
 });

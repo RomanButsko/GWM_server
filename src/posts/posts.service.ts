@@ -6,6 +6,13 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import sequelize from 'sequelize';
 import { Op } from 'sequelize';
+import * as NodeGeocoder from 'node-geocoder';
+
+const options: NodeGeocoder.Options = {
+  provider: 'yandex',
+  apiKey: '1c3e1a0b-c5d3-4286-89a6-4878fd37de76',
+  formatter: null,
+};
 
 @Injectable()
 export class PostsService {
@@ -61,6 +68,36 @@ export class PostsService {
     await post.save();
 
     return post;
+  }
+
+  async getAllLocation() {
+    const geocoder = NodeGeocoder(options);
+    const locations = await this.postRepository.findAll({
+      attributes: ['location'],
+    });
+    const geoLocation = [];
+    for (let i = 0; i < locations.length; i++) {
+      if (locations[i]) {
+        const data = await geocoder.geocode(locations[i].location);
+        geoLocation.push([data[0].latitude, data[0].longitude]);
+      }
+    }
+
+    return geoLocation;
+  }
+
+  async getExactPointer(id: number) {
+    const geocoder = NodeGeocoder(options);
+    const location = await this.postRepository.findOne({
+      where: { id },
+      attributes: ['location'],
+    });
+
+    const geoLocation = [];
+    const data = await geocoder.geocode(location.location);
+    geoLocation.push([data[0].latitude, data[0].longitude]);
+
+    return geoLocation;
   }
 
   async joinEvent(id: number, postId: number) {

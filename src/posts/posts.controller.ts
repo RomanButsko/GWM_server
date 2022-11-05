@@ -43,6 +43,18 @@ export class PostsController {
     return this.postsService.findNewPost();
   }
 
+  @Public()
+  @Get('/location')
+  getAllLocation() {
+    return this.postsService.getAllLocation();
+  }
+
+  @Public()
+  @Get('/location/:id')
+  getExactPointer(@Param('id') id: number) {
+    return this.postsService.getExactPointer(id);
+  }
+
   @Get('findMyPost/:id')
   findMyPost(@Param('id') id: string) {
     return this.postsService.findMyPost(+id);
