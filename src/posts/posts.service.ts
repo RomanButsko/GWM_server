@@ -1,3 +1,5 @@
+import { Chat } from 'src/chat/entities/chat.entity';
+import { ChatService } from './../chat/chat.service';
 import { UserService } from './../user/user.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
@@ -19,10 +21,14 @@ export class PostsService {
   constructor(
     @InjectModel(Post) private readonly postRepository: typeof Post,
     private userService: UserService,
+    private chatService: ChatService,
   ) {}
   async create(dto: CreatePostDto, id: number) {
     dto.userId = id;
-    return await this.postRepository.create(dto);
+    const post = await this.postRepository.create(dto);
+    const chat = await this.chatService.createChat(post.id, dto.title);
+    this.update(post.id, { chatId: +chat.id });
+    return post;
   }
 
   findAll() {

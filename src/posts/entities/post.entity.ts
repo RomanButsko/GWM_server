@@ -1,12 +1,12 @@
+import { Chat } from './../../chat/entities/chat.entity';
 import { User } from './../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
-  HasMany,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -106,6 +106,11 @@ export class Post extends Model<Post, IPost> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  chatId: number;
 
   @ApiProperty({
     example: 'id - пользователя',

@@ -11,6 +11,8 @@ export class CreatePostDto {
   location: string;
   @IsNumber()
   userId: number;
+  @IsNumber()
+  chatId: number;
   @IsString()
   picture: string;
   @IsArray()

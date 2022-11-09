@@ -13,7 +13,6 @@ import { AtGuard } from './auth/decorators';
 import { RolesModule } from './roles/roles.module';
 import { MediaModule } from './media/media.module';
 import { ChatModule } from './chat/chat.module';
-import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -40,7 +39,6 @@ import { AppGateway } from './app.gateway';
       provide: APP_GUARD,
       useClass: AtGuard,
     },
-    AppGateway,
   ],
 })
 export class AppModule {}

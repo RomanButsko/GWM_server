@@ -1,3 +1,4 @@
+import { Chat } from './../chat/entities/chat.entity';
 import { User } from './entities/user.entity';
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -10,7 +11,7 @@ import { UserRole } from 'src/roles/entities/user-role.entity';
 @Module({
   controllers: [UserController],
   providers: [UserService],
-  imports: [SequelizeModule.forFeature([User, Post, Role, UserRole])],
+  imports: [SequelizeModule.forFeature([User, Post, Role, UserRole, Chat])],
   exports: [UserService],
 })
 export class UserModule {}

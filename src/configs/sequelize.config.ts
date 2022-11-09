@@ -1,3 +1,4 @@
+import { Messages } from './../chat/entities/messages.entity';
 import { Chat } from './../chat/entities/chat.entity';
 import { Role } from 'src/roles/entities/role.entity';
 import { User } from './../user/entities/user.entity';
@@ -15,7 +16,7 @@ export const sequalizeConfig = async (
   username: configService.get<string>('POSTGRES_USERNAME'),
   password: configService.get<string>('POSTGRES_PASSWORD'),
   database: configService.get<string>('POSTGRES_DATABASE'),
-  models: [User, Post, Role, UserRole, Chat],
+  models: [User, Post, Role, UserRole, Chat, Messages],
   autoLoadModels: true,
   synchronize: true,
 });
