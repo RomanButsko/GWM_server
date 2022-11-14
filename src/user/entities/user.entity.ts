@@ -1,4 +1,3 @@
-import { Chat } from './../../chat/entities/chat.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { INTEGER } from 'sequelize';
 import {

@@ -2,95 +2,68 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { UserService } from './../user/user.service';
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-message.dto';
-import { CreateChatDto } from './dto/create-chat.dto';
 import {
   MessageBody,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
-import { Logger, OnModuleInit } from '@nestjs/common';
-import { CurrentUser } from 'src/user/user.decorator';
+import { Socket } from 'socket.io';
 
 @WebSocketGateway(80, {
-  // cors: ['http://localhost:3000'],
-  // serveClient: false,
   cors: true,
-  // название пространства может быть любым, но должно учитываться на клиенте
   namespace: 'chat',
 })
-// implements OnGatewayInit, OnModuleInit, OnGatewayDisconnect
 export class ChatGateway {
-  constructor(
-    private chatService: ChatService,
-    private userService: UserService,
-  ) {}
+  constructor(private chatService: ChatService) {}
 
   @WebSocketServer()
-  server: Server;
-  // async handleConnection(client: Socket, ...args: any[]) {
-  //   // const post = client.handshake.query.postId as string;
-  //   // console.log('post', post);
-  //   const userName = client.handshake.query.userId as string;
-  //   console.log('user', userName);
-  //   // const chat = await this.chatService.findChatByPostId(+post);
-  //   // chat.usersID.push(+userName);
-  //   client.broadcast.emit('log', `${userName} connected`);
-  // }
+  server: Socket;
 
-  // onModuleInit() {
-  //   this.server.on('connection', (client: Socket) => {
-  //     console.log('connected id on server', client.handshake.query.postId);
-  //   });
-  // }
-
-  // при отключении пользователя
-  // async handleDisconnect(client: Socket) {
-  //   const userId = client.handshake.query.userId;
-  //   const postId = client.handshake.query.postId as string;
-  //   const user = await this.userService.findOneWithoutPosts(userId);
-
-  //   client.broadcast.emit('log', `${userName} disconnected`);
-  // }
-
-  // когда пользователь подключился
-  afterInit(server: Server) {
-    console.log(server);
-  }
-  @SubscribeMessage('messages:connect')
+  @SubscribeMessage('user:connected')
   async connectChat(
-    @MessageBody() chatId: number,
-    @CurrentUser('id') id: number,
+    @MessageBody() payload: { chatId: number; userId: number },
   ) {
-    const connectChat = await this.chatService.connectToChat(chatId, id);
-    this.server.emit('connect', connectChat);
+    const connectChat = await this.chatService.connectToChat(
+      payload.chatId,
+      payload.userId,
+    );
+    this.server.emit('user:connected', connectChat);
+    await this.handleMessagesGet(payload.chatId);
+  }
+
+  @SubscribeMessage('user:leave')
+  async leaveChat(@MessageBody() payload: { chatId: number; userId: number }) {
+    const connectChat = await this.chatService.leaveToChat(
+      payload.chatId,
+      payload.userId,
+    );
+    this.server.emit('user:leave', connectChat);
   }
 
   @SubscribeMessage('messages:get')
-  async handleMessagesGet(
-    client: Socket,
-    @MessageBody() dialogId: number,
-  ): Promise<void> {
-    const messages = await this.chatService.getMessages(dialogId);
-    this.server
-      .to(client.handshake.query.postId as string)
-      .emit('messages', messages);
+  async handleMessagesGet(@MessageBody() postId: number) {
+    const messages = await this.chatService.getMessages(postId);
+    console.log('get', postId);
+    this.server.emit('messages:get', messages);
+    return messages;
   }
 
   @SubscribeMessage('message:post')
   async handleMessagePost(
     @MessageBody()
     payload: CreateMessageDto,
-  ): Promise<void> {
-    const createdMessage = await this.chatService.createMessage(payload);
-
+  ) {
+    const { text, dialogID, userIdTo, isRead, userIdFrom } = payload;
+    const createdMessage = await this.chatService.createMessage({
+      text,
+      dialogID,
+      userIdTo,
+      isRead,
+      userIdFrom,
+    });
     this.server.emit('message:post', createdMessage);
-
-    // this.handleMessagesGet(payload.dialogId);
+    await this.handleMessagesGet(dialogID);
   }
 
   @SubscribeMessage('message:patch')
@@ -100,7 +73,6 @@ export class ChatGateway {
   ): Promise<void> {
     const updatedMessage = await this.chatService.updateMessage(payload);
     this.server.emit('message:patch', updatedMessage);
-    // this.handleMessagesGet();
   }
 
   @SubscribeMessage('message:delete')
@@ -116,6 +88,5 @@ export class ChatGateway {
       payload.userId,
     );
     this.server.emit('message:delete', removedMessage);
-    // this.handleMessagesGet();
   }
 }

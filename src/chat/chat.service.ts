@@ -13,14 +13,39 @@ export class ChatService {
     @InjectModel(Messages) private messagesRepository: typeof Messages,
   ) {}
 
-  async createChat(id: number, content: string) {
-    return await this.chatRepository.create({ id, content });
+  async createChat(id: number, content: string, userId: number) {
+    return await this.chatRepository.create({
+      postId: id,
+      content,
+      usersID: [userId],
+    });
+  }
+
+  async getChat(id: number) {
+    return await this.chatRepository.findOne({ where: { id } });
   }
 
   async connectToChat(chatId: number, userId: number) {
     const chat = await this.findChatByPostId(chatId);
-    const addUser = chat.usersID.push(userId);
-    return addUser;
+    if (chat.usersID.includes(userId)) {
+      return new ForbiddenException('Пользователь уже состоит в чате');
+    }
+    chat.usersID.push(userId);
+    chat.changed('usersID', true);
+    chat.save();
+
+    return chat;
+  }
+
+  async leaveToChat(chatId: number, userId: number) {
+    const chat = await this.findChatByPostId(chatId);
+    if (!chat.usersID.includes(userId) && chat.postId) {
+      return new ForbiddenException('Пользователь не состоит в чате');
+    }
+    chat.usersID = chat.usersID.filter((user) => user !== userId);
+    chat.changed('usersID', true);
+    chat.save();
+    return chat;
   }
 
   async findChatByPostId(postId: number) {
@@ -34,9 +59,18 @@ export class ChatService {
   async getMessages(dialogID: number) {
     const messages = await this.messagesRepository.findAll({
       where: { dialogID },
+      order: [['updatedAt', 'DESC']],
     });
 
     return messages;
+  }
+
+  async findUserFromChat(id: number) {
+    const messages = await this.messagesRepository.findOne({
+      where: { id },
+    });
+
+    return messages.userIdFrom;
   }
 
   async updateMessage(dto: UpdateChatDto) {

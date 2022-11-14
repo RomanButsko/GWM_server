@@ -28,6 +28,7 @@ export class Chat extends Model<Chat, Chat> {
 
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
+    allowNull: false,
   })
   usersID: number[];
 

@@ -1,12 +1,20 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Public } from 'src/auth/decorators';
 import { ChatService } from './chat.service';
 
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @Post('create/:id')
-  async createChat(@Param('id') id: string, content: string) {
-    return await this.chatService.createChat(+id, content);
+  @Public()
+  @Get('/:id')
+  async getChat(@Param('id') id: number) {
+    return await this.chatService.getChat(id);
+  }
+
+  @Public()
+  @Post('findUser')
+  async findUserFromChat(@Body('id') id: number) {
+    return await this.chatService.findUserFromChat(id);
   }
 }

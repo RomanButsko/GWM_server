@@ -26,7 +26,11 @@ export class PostsService {
   async create(dto: CreatePostDto, id: number) {
     dto.userId = id;
     const post = await this.postRepository.create(dto);
-    const chat = await this.chatService.createChat(post.id, dto.title);
+    const chat = await this.chatService.createChat(
+      post.id,
+      dto.title,
+      dto.userId,
+    );
     this.update(post.id, { chatId: +chat.id });
     return post;
   }

@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     }
     Chats.init(
         {
-            postId: DataTypes.INTEGER
+            friends: DataTypes.ARRAY(DataTypes.INTEGER)
         },
         {
             sequelize,
-            modelName: 'Chats',
+            modelName: 'Users',
         },
     );
     return Chats;

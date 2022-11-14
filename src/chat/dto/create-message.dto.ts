@@ -4,11 +4,11 @@ export class CreateMessageDto {
   @IsString()
   readonly text: string;
   @IsNumber()
-  readonly dialogId: number;
+  readonly dialogID: number;
   @IsNumber()
   readonly userIdTo?: number[];
   @IsNumber()
   readonly userIdFrom: number;
   @IsBoolean()
-  readonly isRead: boolean;
+  readonly isRead?: boolean;
 }

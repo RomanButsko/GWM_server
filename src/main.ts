@@ -25,6 +25,6 @@ async function start() {
   });
 
   await app.listen(PORT);
-  console.log('сервер запущен на порту' + PORT);
+  console.log('🚀 Connected' + ' ' + PORT);
 }
 start();
