@@ -79,6 +79,15 @@ export class Post extends Model<Post, IPost> {
   views: number;
 
   @ApiProperty({
+    example: '/path/',
+    description: 'Путь к файлу заднего фона поста',
+  })
+  @Column({
+    type: DataType.STRING,
+  })
+  bckgPicture: string;
+
+  @ApiProperty({
     example: 'ул.Московская,д.13',
     description: 'Место встречи',
   })

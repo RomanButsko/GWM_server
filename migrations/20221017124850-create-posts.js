@@ -5,10 +5,10 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       await queryInterface.addColumn(
-        'Users',
-        'friends',
+        'Posts',
+        'bckgPicture',
         {
-          type: Sequelize.ARRAY(Sequelize.INTEGER),
+          type: Sequelize.STRING,
         },
         { transaction },
       );

@@ -12,7 +12,6 @@ export class MediaService {
   ): Promise<IMediaResponse> {
     const uploadFolder = `${path}/uploads/${folder}/userId/${id}`;
     await ensureDir(uploadFolder);
-    console.log(mediaFile);
 
     await writeFile(
       `${uploadFolder}/${mediaFile.originalname}`,

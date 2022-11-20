@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     }
     Chats.init(
         {
-            friends: DataTypes.ARRAY(DataTypes.INTEGER)
+            bckgPicture: DataTypes.STRING
         },
         {
             sequelize,
-            modelName: 'Users',
+            modelName: 'Posts',
         },
     );
     return Chats;

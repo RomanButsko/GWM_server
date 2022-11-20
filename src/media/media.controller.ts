@@ -23,6 +23,7 @@ export class MediaController {
     @Query('folder') folder?: string,
     @Query('id') id?: number,
   ) {
+    console.log(mediaFile, folder, id);
     return this.mediaService.saveMedia(mediaFile, folder, id);
   }
 }

@@ -38,6 +38,12 @@ export class PostsController {
   }
 
   @Public()
+  @Get('chooseBg')
+  getPathsAvatarPost() {
+    return this.postsService.getPathsAvatarPost();
+  }
+
+  @Public()
   @Get('findNewPost')
   findNewPost() {
     return this.postsService.findNewPost();
@@ -70,6 +76,12 @@ export class PostsController {
   @Get('findPost/:id')
   findOne(@Param('id') id: string) {
     return this.postsService.findPost(+id);
+  }
+
+  @Public()
+  @Get('findByJoinedUser/:id')
+  findByJoinedUser(@Param('id') id: string) {
+    return this.postsService.findByJoinedUser(+id);
   }
 
   @Post('join/:postId')

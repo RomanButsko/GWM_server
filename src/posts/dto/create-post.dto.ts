@@ -15,6 +15,8 @@ export class CreatePostDto {
   chatId: number;
   @IsString()
   picture: string;
+  @IsString()
+  bckgPicture: string;
   @IsArray()
   joinUser: number[];
 }

@@ -11,10 +11,4 @@ export class ChatController {
   async getChat(@Param('id') id: number) {
     return await this.chatService.getChat(id);
   }
-
-  @Public()
-  @Post('findUser')
-  async findUserFromChat(@Body('id') id: number) {
-    return await this.chatService.findUserFromChat(id);
-  }
 }

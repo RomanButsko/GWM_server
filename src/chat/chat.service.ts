@@ -59,18 +59,10 @@ export class ChatService {
   async getMessages(dialogID: number) {
     const messages = await this.messagesRepository.findAll({
       where: { dialogID },
-      order: [['updatedAt', 'DESC']],
+      order: [['updatedAt', 'ASC']],
     });
 
     return messages;
-  }
-
-  async findUserFromChat(id: number) {
-    const messages = await this.messagesRepository.findOne({
-      where: { id },
-    });
-
-    return messages.userIdFrom;
   }
 
   async updateMessage(dto: UpdateChatDto) {

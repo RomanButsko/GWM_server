@@ -9,6 +9,8 @@ import { Post } from './entities/post.entity';
 import sequelize from 'sequelize';
 import { Op } from 'sequelize';
 import * as NodeGeocoder from 'node-geocoder';
+let fs = require('fs');
+const path = require('path');
 
 const options: NodeGeocoder.Options = {
   provider: 'yandex',
@@ -33,6 +35,22 @@ export class PostsService {
     );
     this.update(post.id, { chatId: +chat.id });
     return post;
+  }
+
+  getPathsAvatarPost() {
+    const folderPath = 'uploads/postEvent';
+    const files = {};
+    fs.readdirSync(folderPath).map((dir) => {
+      if (dir !== '.DS_Store') {
+        files[dir] = [];
+        fs.readdirSync(path.join(folderPath, dir)).map((fileName) => {
+          if (fileName !== '.DS_Store') {
+            files[dir].push(`${folderPath}/${dir}/${fileName}`);
+          }
+        });
+      }
+    });
+    return files;
   }
 
   findAll() {
@@ -61,9 +79,16 @@ export class PostsService {
     return posts;
   }
 
-  findNewPost() {
-    return this.postRepository.findAll({
+  async findNewPost() {
+    return await this.postRepository.findAll({
       order: [['createdAt', 'DESC']],
+    });
+  }
+
+  async findByJoinedUser(id: number) {
+    return await this.postRepository.findOne({
+      where: { id },
+      attributes: ['joinUser'],
     });
   }
 
@@ -85,10 +110,11 @@ export class PostsService {
     const locations = await this.postRepository.findAll({
       attributes: ['location'],
     });
+
     const geoLocation = [];
-    for (let i = 0; i < locations.length; i++) {
+    for (let i = 0; i < locations.length - 1; i++) {
       if (locations[i]) {
-        const data = await geocoder.geocode(locations[i].location);
+        const data = await geocoder.geocode(locations[i].toJSON().location);
         geoLocation.push([data[0].latitude, data[0].longitude]);
       }
     }
@@ -147,7 +173,16 @@ export class PostsService {
     return await post.update(updatePostDto);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const post = await this.findPost(id);
+    const picturePath = post.picture.slice(1);
+    fs.unlink(picturePath, (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log('удалено', picturePath);
+    });
     return this.postRepository.destroy({
       where: {
         id,
